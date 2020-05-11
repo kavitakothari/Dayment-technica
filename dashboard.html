@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head> 
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3pro.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  </head>
+  <body>
+  	<div class="w3-container w3-card" style="margin-bottom: 40px;">
+	  <h1 style="text-align: center;">Finance Dashboard</h1>
+	</div>
+    <div class="col-lg-8" style="text-align: center">
+      <div id="columnchart_values" style="width: 850px; height: 400px; text-align: center"></div>
+      <a href="form.html" class="btn btn-warning btn-lg" >Input Today's Expense</a>
+        <div id="streak" style="text-align: center"></div>
+    </div>
+    <div class="col-lg-4" style="text-align: left">
+        <div id="piechart" style="width: 450px; height: 300px; text-align: center"></div>
+        <div id="exceed"></div>
+        <div style="text-align: center" class ="col-lg-5">
+            <img src="http://www.unitedwaymcca.org/sites/unitedwaymcca.org/files/icon-income-RGB.png" alt="income" height="70px" width="70px">
+            <div id="income" style="padding-top: 20px"></div>
+        </div>
+
+        <div style="text-align: center;"class ="col-lg-4">
+            <img src="https://png2.kisspng.com/sh/15f17565b2f4309846d4e0eab24f16b0/L0KzQYm3U8IxN5t2iZH0aYP2gLBuTgBigZ5qhuY2cHH8grFzjL1pfZ5mhp97ZYPyhcPqhgMua5DyiNd3c3H3ebF1TfFvbF5nReJqeXPrdbTyTgRzaZ94iNN7ZX73PbrqjB4uPZJnSahrZkS3RYa7gccvQGkAUKY9Nkm0RYO4Vcc3QWU9Sqo9LoDxd1==/kisspng-payment-payroll-human-resources-compensation-and-b-paycheck-transparent-icon-5ab16bf44554a7.889844691521576948284.png" alt="budget" height="70px" width="70px">
+            <div id="budget"style="padding-top: 20px"></div>
+        </div>
+        
+        <a href="profile.html" class="btn btn-primary btn-lg" style="margin-top: 20px; margin-left: 80px">Edit Income & Budget</a>
+    </div>
+    
+      
+    <script type="text/javascript">
+        google.charts.load("current", {packages:['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        var sum = parseFloat(localStorage.getItem("Monday")) + parseFloat(localStorage.getItem("Tuesday")) + parseFloat(localStorage.getItem("Wednesday")) + parseFloat(localStorage.getItem("Thursday")) + parseFloat(localStorage.getItem("Friday")) + parseFloat(localStorage.getItem("Saturday")) + parseFloat(localStorage.getItem("Sunday"));
+
+          if (sum >= parseFloat(localStorage.getItem("budget"))*7) {
+              document.getElementById("piechart").innerHTML = "<p>You exceeded your weekly budget!</p> <br><img src=\"http://icons.iconarchive.com/icons/graphicloads/100-flat/256/close-icon.png\" height=\"200px\" width=\"200px\"> " ;
+          }
+          else {
+              google.charts.setOnLoadCallback(drawChart2);
+          }
+
+
+        function drawChart() {
+            var goodcolor = "#15ffa0";
+            var badcolor = "ED6A5A";
+            if (parseFloat(localStorage.getItem("Monday")) <= localStorage.getItem("budget")) {
+                color1 = goodcolor;
+            }
+            else {
+                color1 = badcolor;
+            }
+            if (parseFloat(localStorage.getItem("Tuesday")) <= localStorage.getItem("budget")) {
+                color2 = goodcolor;
+            }
+            else {
+                color2 = badcolor;
+            }
+            if (parseFloat(localStorage.getItem("Wednesday")) <= localStorage.getItem("budget")) {
+                color3 = goodcolor;
+            }
+            else {
+                color3 = badcolor;
+            }
+            if (parseFloat(localStorage.getItem("Thursday")) <= localStorage.getItem("budget")) {
+                color4 = goodcolor;
+            }
+            else {
+                color4 = badcolor;
+            }
+            if (parseFloat(localStorage.getItem("Friday")) <= localStorage.getItem("budget")) {
+                color5 = goodcolor;
+            }
+            else {
+                color5 = badcolor;
+            }
+            if (parseFloat(localStorage.getItem("Saturday")) <= localStorage.getItem("budget")) {
+                color6 = goodcolor;
+            }
+            else {
+                color6 = badcolor;
+            }
+            if (parseFloat(localStorage.getItem("Sunday")) <= localStorage.getItem("budget")) {
+                color7 = goodcolor;
+            }
+            else {
+                color7 = badcolor;
+            }
+            
+            
+          var data = google.visualization.arrayToDataTable([
+            ["Day", "Spending", { role: "style" } ],
+            ["Monday", parseFloat(localStorage.getItem("Monday")), color1],
+            ["Tuesday", parseFloat(localStorage.getItem("Tuesday")), color2],
+            ["Wednesday", parseFloat(localStorage.getItem("Wednesday")), color3],
+            ["Thursday", parseFloat(localStorage.getItem("Thursday")), color4],
+            ["Friday", parseFloat(localStorage.getItem("Friday")), color5],
+            ["Saturday", parseFloat(localStorage.getItem("Saturday")), color6],
+            ["Sunday", parseFloat(localStorage.getItem("Sunday")), color7]
+          ]);
+
+          var view = new google.visualization.DataView(data);
+          view.setColumns([0, 1,
+                           { calc: "stringify",
+                             sourceColumn: 1,
+                             type: "string",
+                             role: "annotation" },
+                           2]);
+
+          var options = {
+            title: "Expenditure By Day",
+            width: 1000,
+            height: 400,
+            bar: {groupWidth: "70%"},
+            legend: { position: "none" },
+          };
+          var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_values"));
+          chart.draw(view, options);     
+          drawVAxisLine(chart, parseFloat(localStorage.getItem("budget")));
+        }
+        function drawChart2() {
+
+
+          var data = google.visualization.arrayToDataTable([
+
+              ['Total', 'Money'],
+              ['Spent', sum],
+              ['Budget Balance',  parseFloat(localStorage.getItem("budget"))*7 - sum]    
+            ]);
+
+            var options = {
+              pieHole: 0.4,
+              slices: {
+                0: { color: "#f7a8c9" },
+                1: { color: "#9adfea" }
+              },
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+            chart.draw(data, options);        
+        }
+
+        function drawVAxisLine(chart,value){
+            var layout = chart.getChartLayoutInterface();
+            var chartArea = layout.getChartAreaBoundingBox();
+            var svg = chart.getContainer().getElementsByTagName('svg')[0];
+            var yLoc = layout.getYLocation(value)
+            svg.appendChild(createLine(chartArea.left, yLoc, chartArea.left + chartArea.width, yLoc,'	#e50202',2)); // axis line 
+        }
+
+        function createLine(x1, y1, x2, y2, color, w) {
+            var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', x1);
+            line.setAttribute('y1', y1);
+            line.setAttribute('x2', x2);
+            line.setAttribute('y2', y2);
+            line.setAttribute('stroke', color);
+            line.setAttribute('stroke-width', w);
+            return line;
+        }
+        
+        document.getElementById("budget").innerHTML = "Daily Budget: " + localStorage.getItem("budget");
+        document.getElementById("income").innerHTML = "Weekly Income: " + localStorage.getItem("income");
+        
+        if (localStorage.getItem("streak") === "3") {
+            document.getElementById("streak").innerHTML = "<img src=\"http://icons.iconarchive.com/icons/seanau/fresh-web/256/Badge-icon.png\" width=\"60px\" height=\"60px\"> Great job! You get a badge for budgeting three days in a row!";
+            
+        }
+        else if (localStorage.getItem("streak") === "-3") {
+            document.getElementById("streak").innerHTML = "Oh no, you might want to watch out for your budget!";
+        }
+  </script>
+  </body>
+</html>
